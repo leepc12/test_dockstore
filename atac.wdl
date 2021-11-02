@@ -126,7 +126,7 @@ workflow atac {
         Array[File] bams = []
         Array[File] nodup_bams = []
         Array[File] tas = []
-        Array[File] peaks = []
+        Array[File?] peaks = []
         Array[File?] peaks_pr1 = []
         Array[File?] peaks_pr2 = []
         File? peak_pooled
@@ -2797,9 +2797,9 @@ task qc_report {
         Array[File] xcor_plots
         Array[File] xcor_scores
         File? jsd_plot
-        Array[File] jsd_qcs
+        Array[File]? jsd_qcs
         Array[File] idr_plots
-        Array[File] idr_plots_pr
+        Array[File]? idr_plots_pr
         File? idr_plot_ppr
         Array[File] frip_qcs
         Array[File] frip_qcs_pr1
@@ -2808,10 +2808,10 @@ task qc_report {
         File? frip_qc_ppr1
         File? frip_qc_ppr2
         Array[File] frip_idr_qcs
-        Array[File] frip_idr_qcs_pr
+        Array[File]? frip_idr_qcs_pr
         File? frip_idr_qc_ppr
         Array[File] frip_overlap_qcs
-        Array[File] frip_overlap_qcs_pr
+        Array[File]? frip_overlap_qcs_pr
         File? frip_overlap_qc_ppr
         File? idr_reproducibility_qc
         File? overlap_reproducibility_qc
