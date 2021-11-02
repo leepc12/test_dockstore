@@ -1734,7 +1734,7 @@ workflow atac {
         call reproducibility as reproducibility_overlap { input :
             prefix = 'overlap',
             peaks = select_all(overlap.bfilt_overlap_peak),
-            peaks_pr = overlap_pr.bfilt_overlap_peak,
+            peaks_pr = if defined(overlap_pr.bfilt_overlap_peak) then select_first([overlap_pr.bfilt_overlap_peak]) else [],
             peak_ppr = overlap_ppr.bfilt_overlap_peak,
             peak_type = peak_type_,
             chrsz = chrsz_,
@@ -1747,7 +1747,7 @@ workflow atac {
         call reproducibility as reproducibility_idr { input :
             prefix = 'idr',
             peaks = select_all(idr.bfilt_idr_peak),
-            peaks_pr = idr_pr.bfilt_idr_peak,
+            peaks_pr = if defined(idr_pr.bfilt_idr_peak) then select_first([idr_pr.bfilt_idr_peak]) else [],
             peak_ppr = idr_ppr.bfilt_idr_peak,
             peak_type = peak_type_,
             chrsz = chrsz_,
@@ -2496,7 +2496,7 @@ task reproducibility {
                             # in a sorted order. for example of 4 replicates,
                             # 1,2 1,3 1,4 2,3 2,4 3,4.
                             # x,y means peak file from rep-x vs rep-y
-        Array[File]? peaks_pr    # peak files from pseudo replicates
+        Array[File] peaks_pr    # peak files from pseudo replicates
         File? peak_ppr            # Peak file from pooled pseudo replicate.
         String peak_type
         File chrsz            # 2-col chromosome sizes file
