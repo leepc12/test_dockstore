@@ -1798,7 +1798,7 @@ workflow atac {
         frip_idr_qcs_pr = if defined(idr_pr.frip_qc) then select_first([idr_pr.frip_qc]) else [],
         frip_idr_qc_ppr = idr_ppr.frip_qc,
         frip_overlap_qcs = select_all(overlap.frip_qc),
-        frip_overlap_qcs_pr = if defined(overlap_pr.frip_qc) then select_first([overlap_pr.frip_qc]) else [],,
+        frip_overlap_qcs_pr = if defined(overlap_pr.frip_qc) then select_first([overlap_pr.frip_qc]) else [],
         frip_overlap_qc_ppr = overlap_ppr.frip_qc,
         idr_reproducibility_qc = reproducibility_idr.reproducibility_qc,
         overlap_reproducibility_qc = reproducibility_overlap.reproducibility_qc,
