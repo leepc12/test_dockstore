@@ -1261,7 +1261,7 @@ workflow chip {
         if ( has_input_of_align && !has_output_of_align ) {
             call align { input :
                 fastqs_R1 = fastqs_R1[i],
-                fastqs_R2 = fastqs_R2[i],
+                fastqs_R2 = if paired_end_ then fastqs_R2[i] else [],
                 crop_length = crop_length,
                 crop_length_tol = crop_length_tol,
                 trimmomatic_phred_score_format = trimmomatic_phred_score_format,
@@ -1506,7 +1506,7 @@ workflow chip {
         if ( has_input_of_align_ctl && !has_output_of_align_ctl ) {
             call align as align_ctl { input :
                 fastqs_R1 = ctl_fastqs_R1[i],
-                fastqs_R2 = ctl_fastqs_R2[i],
+                fastqs_R2 = if ctl_paired_end_ then ctl_fastqs_R2[i] else [],
                 crop_length = crop_length,
                 crop_length_tol = crop_length_tol,
                 trimmomatic_phred_score_format = trimmomatic_phred_score_format,
