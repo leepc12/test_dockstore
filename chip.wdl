@@ -1501,7 +1501,9 @@ workflow chip {
         Boolean ctl_paired_end_ = if !defined(ctl_paired_end) && i<length(ctl_paired_ends) then ctl_paired_ends[i]
             else select_first([ctl_paired_end, paired_end])
 
-        if ( true ) {
+        Boolean has_input_of_align_ctl = i<length(ctl_fastqs_R1) && length(ctl_fastqs_R1[i])>0
+        Boolean has_output_of_align_ctl = i<length(ctl_bams) && defined(ctl_bams[i])
+        if ( has_input_of_align_ctl && !has_output_of_align_ctl ) {
             call align as align_ctl { input :
                 fastqs_R1 = ctl_fastqs_R1[i],
                 fastqs_R2 = [],
@@ -1515,7 +1517,7 @@ workflow chip {
                 idx_tar = if aligner=='bwa' then bwa_idx_tar_
                     else if aligner=='bowtie2' then bowtie2_idx_tar_
                     else custom_aligner_idx_tar,
-                paired_end = false,
+                paired_end = ctl_paired_end_,
                 use_bwa_mem_for_pe = use_bwa_mem_for_pe,
                 bwa_mem_read_len_limit = bwa_mem_read_len_limit,
                 use_bowtie2_local_mode = use_bowtie2_local_mode,
@@ -1529,12 +1531,15 @@ workflow chip {
                 runtime_environment = runtime_environment
             }
         }
-        File? ctl_bam_ = align_ctl.bam
+        File? ctl_bam_ = if has_output_of_align_ctl then ctl_bams[i] else align_ctl.bam
 
-        if ( true ) {
+        Boolean has_input_of_filter_ctl = has_output_of_align_ctl || defined(align_ctl.bam)
+        Boolean has_output_of_filter_ctl = i<length(ctl_nodup_bams) && defined(ctl_nodup_bams[i])
+        # skip if we already have output of this step
+        if ( has_input_of_filter_ctl && !has_output_of_filter_ctl ) {
             call filter as filter_ctl { input :
                 bam = ctl_bam_,
-                paired_end = false,
+                paired_end = ctl_paired_end_,
                 ref_fa = ref_fa_,
                 redact_nodup_bam = redact_nodup_bam,
                 dup_marker = dup_marker,
@@ -1552,13 +1557,15 @@ workflow chip {
                 runtime_environment = runtime_environment
             }
         }
-        File? ctl_nodup_bam_ = filter_ctl.nodup_bam
+        File? ctl_nodup_bam_ = if has_output_of_filter_ctl then ctl_nodup_bams[i] else filter_ctl.nodup_bam
 
-        if ( true ) {
+        Boolean has_input_of_bam2ta_ctl = has_output_of_filter_ctl || defined(filter_ctl.nodup_bam)
+        Boolean has_output_of_bam2ta_ctl = i<length(ctl_tas) && defined(ctl_tas[i])
+        if ( has_input_of_bam2ta_ctl && !has_output_of_bam2ta_ctl ) {
             call bam2ta as bam2ta_ctl { input :
                 bam = ctl_nodup_bam_,
                 subsample = ctl_subsample_reads,
-                paired_end = false,
+                paired_end = ctl_paired_end_,
                 mito_chr_name = mito_chr_name_,
 
                 cpu = bam2ta_cpu,
@@ -1568,7 +1575,7 @@ workflow chip {
                 runtime_environment = runtime_environment
             }
         }
-        File? ctl_ta_ = bam2ta_ctl.ta
+        File? ctl_ta_ = if has_output_of_bam2ta_ctl then ctl_tas[i] else bam2ta_ctl.ta
     }
 
     # if there are TAs for ALL replicates then pool them
