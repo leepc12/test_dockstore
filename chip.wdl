@@ -1529,7 +1529,7 @@ workflow chip {
                 runtime_environment = runtime_environment
             }
         }
-        File? ctl_bam_ = if has_output_of_align_ctl then ctl_bams[i] else align_ctl.bam
+        File? ctl_bam_ = align_ctl.bam
 
         if ( true ) {
             call filter as filter_ctl { input :
